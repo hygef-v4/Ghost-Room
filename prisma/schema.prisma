@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Room {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  expiresAt DateTime @db.Timestamp()
+  status    String   @default("active") // active, expired, closed
+  maxUsers  Int      @default(10)
+
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model RoomEvent {
+  id        String   @id @default(cuid())
+  roomId    String
+  eventType String   // "created", "user_joined", "user_left", "closed"
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([roomId])
+  @@index([createdAt])
+}

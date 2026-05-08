@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ghostroom-postgres
+    environment:
+      POSTGRES_USER: ghostroom
+      POSTGRES_PASSWORD: ghostroom_dev
+      POSTGRES_DB: ghostroom
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ghostroom"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ghostroom-backend
+    environment:
+      DATABASE_URL: postgresql://ghostroom:ghostroom_dev@postgres:5432/ghostroom?sslmode=disable
+      PORT: 8080
+      ALLOWED_ORIGINS: http://localhost:3000
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: go run cmd/server/main.go
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ghostroom-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+      NEXT_PUBLIC_WS_URL: ws://localhost:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev

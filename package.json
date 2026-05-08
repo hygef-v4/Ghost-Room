@@ -1,0 +1,33 @@
+{
+  "name": "ghost-room",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "db:up": "docker compose up postgres -d",
+    "db:down": "docker compose down",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:prod": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "db:generate": "prisma generate",
+    "dev:backend": "cd backend && go run cmd/server/main.go",
+    "dev:frontend": "cd frontend && npm run dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hygef-v4/Ghost-Room.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/hygef-v4/Ghost-Room/issues"
+  },
+  "homepage": "https://github.com/hygef-v4/Ghost-Room#readme",
+  "devDependencies": {
+    "@prisma/client": "^7.8.0",
+    "prisma": "^7.8.0"
+  }
+}
